@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="Content-Language" content="en">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Análisis de datos de COVID-19 en Zacatecas</title>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+  <meta name="description" content="This is an example dashboard created using build-in elements and components.">
+  <meta name="msapplication-tap-highlight" content="no">
+  <link rel='stylesheet' href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel='stylesheet' href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+</head>
+
+<body>
+  <div class="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header">
+    <div class="app-main">
+      <div class="app-main__outer">
+        <div class="app-main__inner">
+          <div class="app-page-title">
+            <div class="page-title-wrapper">
+              <div class="page-title-heading">
+                <div>Análisis de datos de COVID-19 en Zacatecas actualizado a la fecha {{actualizacion}}
+                  <div class="page-title-subheading">
+                    <a href="https://www.gob.mx/salud/documentos/datos-abiertos-152127" target="_blank">
+                      Fuente: Datos Abiertos - Dirección General de Epidemiología
+                    </a>
+                    <br/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 col-lg-12">
+              <div class="mb-3 card casos">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                  <div class="card-header-title">
+                    <i class="header-icon lnr-apartment icon-gradient bg-love-kiss"> </i>
+                    Crecimiento de casos positivos
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="widget-chat-wrapper-outer">
+                    <div class="widget-chart-wrapper widget-chart-wrapper-lg opacity-10 m-0">
+                      <canvas id="chartCasos"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3 col-xl-3">
+              <div class="card mb-3 widget-content bg-secondary">
+                <div class="widget-content-wrapper text-white">
+                  <div class="widget-content-left">
+                    <div class="widget-heading">Total de casos</div>
+                    <div class="widget-subheading">Casos en el estado de Zacatecas</div>
+                  </div>
+                  <div class="widget-content-right">
+                    <div class="widget-numbers text-white"><span>{{ total }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-xl-3">
+              <div class="card mb-3 widget-content bg-danger">
+                <div class="widget-content-wrapper text-white">
+                  <div class="widget-content-left">
+                    <div class="widget-heading">Total de casos positivos</div>
+                    <div class="widget-subheading">Prueba de SARS-CoV-2 positiva</div>
+                  </div>
+                  <div class="widget-content-right">
+                    <div class="widget-numbers text-white">
+                      <span>{{ positivos }}</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-xl-3">
+              <div class="card mb-3 widget-content bg-warning">
+                <div class="widget-content-wrapper text-white">
+                  <div class="widget-content-left">
+                    <div class="widget-heading">Total de casos sospechosos</div>
+                    <div class="widget-subheading">Prueba de SARS-CoV-2 pendiente</div>
+                  </div>
+                  <div class="widget-content-right">
+                    <div class="widget-numbers text-white">
+                      <span>{{ sospechosos }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 col-xl-3">
+              <div class="card mb-3 widget-content bg-success">
+                <div class="widget-content-wrapper text-white">
+                  <div class="widget-content-left">
+                    <div class="widget-heading">Total de casos negativos</div>
+                    <div class="widget-subheading">Prueba de SARS-CoV-2 negativa</div>
+                  </div>
+                  <div class="widget-content-right">
+                    <div class="widget-numbers text-white">
+                      <span>{{ negativos }}</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 col-lg-6">
+              <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                  <div class="card-header-title">
+                    <i class="header-icon lnr-apartment icon-gradient bg-love-kiss"> </i>
+                    Total de casos positivos en el estado
+                  </div>
+                </div>
+                <div class="card-body">
+                  <table class="mb-0 table" id="caracteristicas">
+                    <thead>
+                      <tr>
+                        <th>Municipio</th>
+                        <th>Total de casos positivos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor = "let mun of municipiosNombres; let i = index">
+                        <td>
+                          {{mun}}
+                        </td>
+                        <td>
+                          {{municipiosTotales[i]}}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 col-lg-6">
+              <div class="row">
+                <div class="col-md-6 col-xl-6">
+                  <div class="card mb-3 widget-content">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left">
+                        <div class="widget-heading">Mujeres</div>
+                        <div class="widget-subheading">Casos femeninos positivos</div>
+                      </div>
+                      <div class="widget-content-right">
+                        <div class="widget-numbers text-info2">
+                          <span>{{ mujeres }}%</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xl-6">
+                  <div class="card mb-3 widget-content">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left">
+                        <div class="widget-heading">Hombres</div>
+                        <div class="widget-subheading">Casos masculinos positivos</div>
+                      </div>
+                      <div class="widget-content-right">
+                        <div class="widget-numbers text-info">
+                          <span>{{ hombres }}%</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 col-xl-6">
+                  <div class="card mb-3 widget-content">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left">
+                        <div class="widget-heading">Hospitalizados</div>
+                        <div class="widget-subheading">Casos positivos hospitalizados</div>
+                      </div>
+                      <div class="widget-content-right">
+                        <div class="widget-numbers text-warning">
+                          <span>{{ hospitalizados }}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-xl-6">
+                  <div class="card mb-3 widget-content">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left">
+                        <div class="widget-heading">Ambulatorios</div>
+                        <div class="widget-subheading">Casos positivos ambulatorios</div>
+                      </div>
+                      <div class="widget-content-right">
+                        <div class="widget-numbers text-warning">
+                          <span>{{ ambulatorios }}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 col-xl-6">
+                  <div class="card mb-3 widget-content">
+                    <div class="widget-content-wrapper">
+                      <div class="widget-content-left">
+                        <div class="widget-heading">Casos con contacto positivo</div>
+                        <div class="widget-subheading">Casos en contacto con otro caso</div>
+                      </div>
+                      <div class="widget-content-right">
+                        <div class="widget-numbers text-secondary">
+                          <span>{{ casosContacto }}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 col-lg-6">
+              <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                  <div class="card-header-title">
+                    <i class="header-icon lnr-apartment icon-gradient bg-love-kiss"> </i>
+                    Número de casos positivos por edad
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="widget-chat-wrapper-outer">
+                    <div class="widget-chart-wrapper widget-chart-wrapper-lg opacity-10 m-0">
+                      <canvas id="edadesChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 col-lg-6">
+              <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                  <div class="card-header-title">
+                    <i class="header-icon lnr-apartment icon-gradient bg-love-kiss"> </i>
+                    Casos con otras enfermedades
+                  </div>
+                </div>
+                <div class="card-body">
+                  <table class="mb-0 table" id="enfermedades">
+                    <thead>
+                      <tr>
+                        <th>Enfermedad</th>
+                        <th>Total de casos positivos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Neumonia</td>
+                        <td>{{ neumo }}</td>
+                      </tr>
+                      <tr>
+                        <td>Diabetes</td>
+                        <td>{{ diabetes }}</td>
+                      </tr>
+                      <tr>
+                        <td>EPOC</td>
+                        <td>{{ epoc }}</td>
+                      </tr>
+                      <tr>
+                        <td>Asma</td>
+                        <td>{{ asma }}</td>
+                      </tr>
+                      <tr>
+                        <td>Inmunosupresión</td>
+                        <td>{{ inmuno }}</td>
+                      </tr>
+                      <tr>
+                        <td>Hipertensión</td>
+                        <td>{{ hiper }}</td>
+                      </tr>
+                      <tr>
+                        <td>Cardiovascular</td>
+                        <td>{{ cardio }}</td>
+                      </tr>
+                      <tr>
+                        <td>Obsesidad</td>
+                        <td>{{ obsesidad }}</td>
+                      </tr>
+                      <tr>
+                        <td>Renal Crónica</td>
+                        <td>{{ renal }}</td>
+                      </tr>
+                      <tr>
+                        <td>Tabaquismo</td>
+                        <td>{{ tabaquismo }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 col-lg-6">
+              <div class="mb-3 card">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                  <div class="card-header-title">
+                    <i class="header-icon lnr-apartment icon-gradient bg-love-kiss"> </i>
+                    Otras características
+                  </div>
+                </div>
+                <div class="card-body">
+                  <table class="mb-0 table" id="caracteristicas">
+                    <thead>
+                      <tr>
+                        <th>Caracterísica</th>
+                        <th>Total de casos positivos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Cuidados Intensivos</td>
+                        <td>{{ uci }}</td>
+                      </tr>
+                      <tr>
+                        <td>Intubación</td>
+                        <td>{{ intubado }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"
+    integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-firestore.js"></script>
+</body>
+
+</html>
